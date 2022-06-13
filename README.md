@@ -4,7 +4,7 @@
 lianast11@Liudmilas-MBP ansible % ansible-playbook site.yml -i inventory/test.yml
 
   "msg": "12"
----
+___
 
 2. Найдите файл с переменными (group_vars) в котором задаётся найденное в первом пункте значение и поменяйте его на 'all default fact'.
 
