@@ -125,7 +125,8 @@ ok: [localhost] => {
 9.  Какой параметр из модуля подключения `ssh` необходим для того, чтобы определить пользователя, под которым необходимо совершать подключение?
 
 
-```remote_user
+```
+remote_user
         User name with which to login to the remote server, normally set by the remote_user keyword.
         If no user is supplied, Ansible will let the SSH client binary choose the user as it normally.
         [Default: (null)]
