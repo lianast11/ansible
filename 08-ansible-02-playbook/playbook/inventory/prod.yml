@@ -1,0 +1,14 @@
+---
+clickhouse:
+  hosts:
+    centos:
+      ansible_connection: docker
+
+vector:
+  hosts:
+    centos:
+      ansible_connection: docker
+
+
+
+

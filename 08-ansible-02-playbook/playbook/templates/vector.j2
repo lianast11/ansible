@@ -1,0 +1,37 @@
+data_dir: /var/lib/vector
+sources:
+  apache_logs:
+    type: file
+    include:
+      - /var/log/apache2/*.log
+    ignore_older: 86400
+transforms:
+  remap:
+    inputs:
+      - apache_logs
+    type: remap
+    source: |
+            . = parse_apache_log(.message)
+  apache_sampler:
+    inputs:
+      - apache_parser
+    type: sampler
+    rate: 50
+sinks:
+  es_cluster:
+    inputs:
+      - apache_sampler
+    type: elasticsearch
+    host: 'http://79.12.221.222:9200'
+    index: vector-%Y-%m-%d
+  s3_archives:
+    inputs:
+      - apache_parser
+    type: aws_s3
+    region: us-east-1
+    bucket: my-log-archives
+    key_prefix: date=%Y-%m-%d
+    compression: gzip
+    encoding: ndjson
+    batch:
+      max_bytes: 10000000
