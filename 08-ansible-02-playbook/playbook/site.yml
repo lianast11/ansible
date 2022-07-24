@@ -61,8 +61,28 @@
           - vector-{{ vector_version }}.rpm
 
     - name: Config Vector
-      template: 
+      ansible.builtin.template: 
         src: vector.j2
         mode: 0644
-        dest: "{{ vector_install_dir }}/vector.yml"    
+        dest: "{{ vector_install_dir }}/vector.yml"     
+
+- name: Install Lighthouse
+  hosts: clickhouse
+  tasks:
+    - name: Install git
+      become: true
+      ansible.builtin.yum:
+       name: git
+       state: present
+       update_cache: yes
+
+    - name: ensure nginx is at the latest version
+      ansible.builtin.yam:
+        name: nginx 
+        state: present
+    - name: start nginx
+      ansible.builtin.service:
+        name: nginx
+        state: started
+
 
