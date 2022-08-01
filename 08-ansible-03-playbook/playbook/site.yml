@@ -42,13 +42,7 @@
 - name: Install Vector
   hosts: vector
   tasks:
-    - name: Create folder for Vector
-      become: true
-      file: 
-        state: directory 
-        mode: 0644 
-        dest: "{{ vector_install_dir }}"
-
+  
     - name: Vector | install rpm
       become: true
       ansible.builtin.yum:
