@@ -1,0 +1,3 @@
+lighthouse_vcs: http://github.com/VKCOM/lighthouse.git
+lighthouse_path: "/srv/www/"
+lighthouse_dir: "lighthouse"

@@ -1,1 +1,19 @@
-{{ vector_config | to_nice_yml }}
+
+  sources:
+    our_log:
+      type: file
+      ignore_older_secs: 600
+      include:
+        - /home/lianast11/logs/*.log
+      read_from: beginning
+  sinks:
+    to_clickhouse:
+      type: clickhouse
+      inputs:
+        - our_log
+      database: mydatabase
+      endpoint: http://51.250.64.22:8123
+      table: my_table
+      compression: gzip
+      healthcheck: false
+      skip_unknown_fields: true

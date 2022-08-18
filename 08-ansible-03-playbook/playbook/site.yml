@@ -57,7 +57,8 @@
         owner: "{{ ansible_user_id }}"
         group: "{{ ansible_group_gid }}"
         dest: vector.yml
-        validate: vector validate --no-environment --yaml-config %s    
+        validate: vector validate --no-environment --config-yaml vector.yml  %s
+           
 
     - name: Vector | Template Config
       become: true
@@ -74,10 +75,44 @@
         name: vector
         state: started
         daemon_reload: true
-        
 
-- name: Install Lighthouse
-  hosts: clickhouse
+- name: Install Nginx
+  hosts: lighthouse
+  handlers:
+    - name: Start nginx service
+      become: true
+      ansible.builtin.service:
+        name: nginx.service
+        enabled: true
+        state: restarted
+  tasks:
+    - name: Nginx | Install epel-release
+      become: true
+      ansible.builtin.yum:
+        name: epel-release
+        state: present
+    - name: Nginx | Install Nginx
+      become: true
+      ansible.builtin.yum:
+        name: nginx
+        state: present
+      notify: Start nginx service
+    - name: Nginx | Config
+      become: true
+      ansible.builtin.template:
+        src: nginx.conf.j2
+        dest: /etc/nginx/nginx.conf
+        mode: 0644
+      
+- name: Install Lighthouse | dependencies
+  hosts: lighthouse
+  handlers:
+    - name: Start nginx service
+      become: true
+      ansible.builtin.service:
+        name: nginx.service
+        enabled: true
+        state: restarted
   tasks:
     - name: Install git
       become: true
@@ -85,14 +120,15 @@
        name: git
        state: present
        update_cache: yes
-
-    - name: ensure nginx is at the latest version
-      ansible.builtin.yam:
-        name: nginx 
-        state: present
-    - name: start nginx
-      ansible.builtin.service:
-        name: nginx
-        state: started
-
-
+    - name: Lighthouse - get from git
+      ansible.builtin.git:
+        repo: "{{ lighthouse_vcs }}"
+        version: master
+        dest: "{{ lighthouse_dir }}"
+    - name: Lighthouse - create config file
+      become: true
+      ansible.builtin.template:
+        src: templates/lighthouse.conf.j2
+        dest: /etc/nginx/conf.d/lighthouse.conf
+        mode: 0644
+      notify: Start nginx service
